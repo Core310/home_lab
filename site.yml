@@ -1,0 +1,51 @@
+---
+- name: GSD FOSS Anime Stack Deployment
+  hosts: homelab_server
+  become: yes
+  tasks:
+    - name: Ensure Podman and Podman Compose are installed
+      apt:
+        name:
+          - podman
+          - podman-compose
+        state: present
+        update_cache: yes
+
+    - name: Create a main media directory on the host server
+      file:
+        path: /opt/media
+        state: directory
+        mode: '0775'
+        owner: "1000"
+        group: "1000"
+
+    - name: Create a subfolder strictly for qBittorrent to drop raw downloads
+      file:
+        path: /opt/media/downloads
+        state: directory
+        mode: '0775'
+        owner: "1000"
+        group: "1000"
+
+    - name: Create a subfolder strictly for Jellyfin to read the final, organized media
+      file:
+        path: /opt/media/jellyfin
+        state: directory
+        mode: '0775'
+        owner: "1000"
+        group: "1000"
+
+    - name: Create FOSS application deployment directory
+      file:
+        path: /opt/foss_stack
+        state: directory
+
+    - name: Copy docker-compose.yml to the host
+      copy:
+        src: files/docker-compose.yml
+        dest: /opt/foss_stack/docker-compose.yml
+
+    - name: Spin up the entire FOSS stack
+      command: podman-compose up -d
+      args:
+        chdir: /opt/foss_stack
