@@ -1,0 +1,27 @@
+---
+- name: GSD Pi-hole + Cloudflare WARP Deployment
+  hosts: homelab_server
+  become: yes
+  tasks:
+    - name: Ensure Podman and Podman Compose are installed
+      apt:
+        name:
+          - podman
+          - podman-compose
+        state: present
+        update_cache: yes
+
+    - name: Create FOSS network security deployment directory
+      file:
+        path: /opt/pihole_stack
+        state: directory
+
+    - name: Copy docker-compose.yml to the host
+      copy:
+        src: files/docker-compose.yml
+        dest: /opt/pihole_stack/docker-compose.yml
+
+    - name: Spin up the Pi-hole + Cloudflare DoH stack
+      command: podman-compose up -d
+      args:
+        chdir: /opt/pihole_stack
