@@ -10,12 +10,12 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/Chicago
-      - WEBUI_PORT=8080
+      - WEBUI_PORT=9000
     volumes:
       - ./config/qbittorrent:/config
       - /opt/media/downloads:/downloads 
     ports:
-      - 8080:8080
+      - 9000:9000
       - 6881:6881
       - 6881:6881/udp
     restart: unless-stopped
@@ -30,7 +30,7 @@ services:
     volumes:
       - ./config/prowlarr:/config
     ports:
-      - 9696:9696
+      - 9002:9696
     restart: unless-stopped
 
   sonarr:
@@ -44,7 +44,7 @@ services:
       - ./config/sonarr:/config
       - /opt/media:/media 
     ports:
-      - 8989:8989
+      - 9001:8989
     restart: unless-stopped
 
   jellyfin:
@@ -58,5 +58,5 @@ services:
       - ./config/jellyfin:/config
       - /opt/media/jellyfin:/data/tvshows 
     ports:
-      - 8096:8096
+      - 9003:8096
     restart: unless-stopped

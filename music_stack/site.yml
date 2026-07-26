@@ -1,0 +1,43 @@
+---
+- name: GSD Music and Management Stack Deployment
+  hosts: homelab_server
+  become: yes
+  tasks:
+    - name: Ensure Podman and Podman Compose are installed
+      apt:
+        name:
+          - podman
+          - podman-compose
+        state: present
+        update_cache: yes
+
+    - name: Create music directory on the host server
+      file:
+        path: /opt/media/music
+        state: directory
+        mode: '0775'
+        owner: "1000"
+        group: "1000"
+
+    - name: Create Music application deployment directory
+      file:
+        path: /opt/music_stack
+        state: directory
+
+    - name: Create config directory for filebrowser database to avoid Docker directory-creation bug
+      file:
+        path: /opt/music_stack/config/filebrowser
+        state: directory
+        mode: '0775'
+        owner: "1000"
+        group: "1000"
+
+    - name: Copy docker-compose.yml to the host
+      copy:
+        src: files/docker-compose.yml
+        dest: /opt/music_stack/docker-compose.yml
+
+    - name: Spin up the Music and Management stack
+      command: podman-compose up -d
+      args:
+        chdir: /opt/music_stack
