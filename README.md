@@ -64,6 +64,9 @@ Deploy any stack simply by running its respective `run.sh` script:
 
 # 7. DNS & Network Security Stack (Pi-hole, DNSCrypt-Proxy)
 ./pihole/run.sh
+
+# 8. Automated Job Application Pipeline (ApplyPilot)
+./job_applier/run.sh
 ```
 
 ---

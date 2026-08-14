@@ -23,3 +23,6 @@
 
 - name: Deploy DNS & Network Security Stack (Pi-hole & DNSCrypt-Proxy)
   import_playbook: pihole/site.yml
+
+- name: Deploy Automated Job Application Pipeline (ApplyPilot)
+  import_playbook: job_applier/site.yml
