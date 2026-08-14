@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   caddy:
-    image: caddy:latest
+    image: caddy-cloudflare:latest
     container_name: caddy
     restart: unless-stopped
     ports:
@@ -12,6 +12,7 @@ services:
     environment:
       - DOMAIN=${DOMAIN:-somethingsomething.fyi}
       - ACME_EMAIL=${ACME_EMAIL:-admin@somethingsomething.fyi}
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./caddy_data:/data

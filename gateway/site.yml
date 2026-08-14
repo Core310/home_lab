@@ -63,6 +63,7 @@
           AUTHENTIK_PG_USER=authentik
           AUTHENTIK_PG_DB=authentik
           AUTHENTIK_PG_PASS=authentik_gsd_secure_pgpass
+          CLOUDFLARE_API_TOKEN={{ lookup('env', 'CLOUDFLARE_API_TOKEN') | default(cloudflare_api_token | default(''), true) }}
         mode: '0600'
 
     - name: Copy docker-compose.yml into stack directory

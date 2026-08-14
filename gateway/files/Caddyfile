@@ -1,30 +1,32 @@
 {
-    auto_https disable_redirects
+    email {$ACME_EMAIL:admin@somethingsomething.fyi}
 }
 
-(app_tls) {
-    tls internal
+(cf_tls) {
+    tls {
+        dns cloudflare {$CLOUDFLARE_API_TOKEN}
+    }
 }
 
 # Dashboard & Identity
-http://dash.{$DOMAIN:somethingsomething.fyi}, dash.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+dash.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9302
 }
 
-http://auth.{$DOMAIN:somethingsomething.fyi}, auth.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+auth.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9300
 }
 
 # Personal Cloud & Vault
-http://vault.{$DOMAIN:somethingsomething.fyi}, vault.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+vault.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9400
 }
 
-http://photos.{$DOMAIN:somethingsomething.fyi}, photos.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+photos.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9401 {
         header_up Host {host}
         header_up X-Real-IP {remote}
@@ -33,85 +35,85 @@ http://photos.{$DOMAIN:somethingsomething.fyi}, photos.{$DOMAIN:somethingsomethi
     }
 }
 
-http://git.{$DOMAIN:somethingsomething.fyi}, git.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+git.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9402
 }
 
 # Life Management
-http://recipes.{$DOMAIN:somethingsomething.fyi}, recipes.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+recipes.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9500
 }
 
-http://garage.{$DOMAIN:somethingsomething.fyi}, garage.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+garage.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9501
 }
 
-http://wishlist.{$DOMAIN:somethingsomething.fyi}, wishlist.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+wishlist.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9502
 }
 
-http://speedtest.{$DOMAIN:somethingsomething.fyi}, speedtest.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+speedtest.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9503
 }
 
 # Media Automation
-http://anime.{$DOMAIN:somethingsomething.fyi}, anime.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+anime.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9003
 }
 
-http://torrents.{$DOMAIN:somethingsomething.fyi}, torrents.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+torrents.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9000
 }
 
-http://sonarr.{$DOMAIN:somethingsomething.fyi}, sonarr.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+sonarr.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9001
 }
 
-http://prowlarr.{$DOMAIN:somethingsomething.fyi}, prowlarr.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+prowlarr.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9002
 }
 
-http://music.{$DOMAIN:somethingsomething.fyi}, music.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+music.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9101
 }
 
-http://files.{$DOMAIN:somethingsomething.fyi}, files.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+files.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9100
 }
 
 # System Utilities
-http://portainer.{$DOMAIN:somethingsomething.fyi}, portainer.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+portainer.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9200
 }
 
-http://pdf.{$DOMAIN:somethingsomething.fyi}, pdf.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+pdf.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9203
 }
 
-http://convert.{$DOMAIN:somethingsomething.fyi}, convert.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+convert.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9204
 }
 
-http://status.{$DOMAIN:somethingsomething.fyi}, status.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+status.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9202
 }
 
-http://pihole.{$DOMAIN:somethingsomething.fyi}, pihole.{$DOMAIN:somethingsomething.fyi} {
-    import app_tls
+pihole.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
     reverse_proxy host.docker.internal:9600
 }
