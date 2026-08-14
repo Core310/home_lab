@@ -3,81 +3,85 @@
 - Portal & Security:
     - Authentik:
         icon: authentik.png
-        href: http://localhost:9300
+        href: https://auth.somethingsomething.fyi
         description: SSO & Identity Management
     - Portainer:
         icon: portainer.png
-        href: http://localhost:9200
-        description: Container Management
+        href: https://portainer.somethingsomething.fyi
+        description: Docker Container Admin
     - Beszel Hub:
         icon: beszel.png
-        href: http://localhost:9202
+        href: https://status.somethingsomething.fyi
         description: System Resource Monitoring
+    - Pi-hole:
+        icon: pi-hole.png
+        href: https://pihole.somethingsomething.fyi
+        description: Network-wide Ad Blocking
 
-- Cloud & Code:
+- Personal Cloud:
     - Vaultwarden:
         icon: vaultwarden.png
-        href: http://localhost:9400
-        description: Password Manager
+        href: https://vault.somethingsomething.fyi
+        description: Password Manager & 2FA
     - Immich:
         icon: immich.png
-        href: http://localhost:9401
-        description: Photos & Video Backup
+        href: https://photos.somethingsomething.fyi
+        description: Photo & Video Backup
     - Gitea:
         icon: gitea.png
-        href: http://localhost:9402
+        href: https://git.somethingsomething.fyi
         description: Self-hosted Git Service
 
 - Lifestyle & Home:
     - Mealie:
         icon: mealie.png
-        href: http://localhost:9500
+        href: https://recipes.somethingsomething.fyi
         description: Recipe & Meal Planner
     - LubeLogger:
         icon: lubelogger.png
-        href: http://localhost:9501
+        href: https://garage.somethingsomething.fyi
         description: Vehicle Maintenance Tracker
     - Christmas Community:
         icon: gift.png
-        href: http://localhost:9502
+        href: https://wishlist.somethingsomething.fyi
         description: Secret Santa & Wishlists
     - Speedtest Tracker:
         icon: speedtest-tracker.png
-        href: http://localhost:9503
-        description: Bandwidth Monitoring
+        href: https://speedtest.somethingsomething.fyi
+        description: Bandwidth & Latency Metrics
 
-- Media Stack:
+- Media Automation:
     - Jellyfin:
         icon: jellyfin.png
-        href: http://localhost:9003
-        description: Media Streaming
+        href: https://anime.somethingsomething.fyi
+        description: Movie & Anime Streaming
     - qBittorrent:
         icon: qbittorrent.png
-        href: http://localhost:9000
+        href: https://torrents.somethingsomething.fyi
         description: Torrent Client
     - Sonarr:
         icon: sonarr.png
-        href: http://localhost:9001
-        description: TV & Anime Management
+        href: https://sonarr.somethingsomething.fyi
+        description: TV & Anime Acquisition
     - Prowlarr:
         icon: prowlarr.png
-        href: http://localhost:9002
+        href: https://prowlarr.somethingsomething.fyi
         description: Indexer Manager
     - Lidarr:
         icon: lidarr.png
-        href: http://localhost:9101
+        href: https://music.somethingsomething.fyi
         description: Music Management
-    - Filebrowser:
+    - FileBrowser:
         icon: filebrowser.png
-        href: http://localhost:9100
-        description: Web File Manager
+        href: https://files.somethingsomething.fyi
+        description: Cloud File Manager
 
-- Tools:
+- Utilities & Tools:
     - BentoPDF:
         icon: pdf.png
-        href: http://localhost:9203
-        description: Offline PDF Tools
+        href: https://pdf.somethingsomething.fyi
+        description: Offline PDF Toolkit
     - VERT:
         icon: swap.png
-        href: http://localhost:9204
-        description: Media & Document Converter
+        href: https://convert.somethingsomething.fyi
+        description: File & Media Converter

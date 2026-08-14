@@ -1,0 +1,29 @@
+---
+# Homepage Bookmarks Configuration
+- Developer & AI:
+    - GitHub:
+        - icon: github.png
+          href: https://github.com/Core310
+    - Claude:
+        - icon: anthropic.png
+          href: https://claude.ai
+    - ChatGPT:
+        - icon: openai.png
+          href: https://chatgpt.com
+    - Gemini:
+        - icon: google.png
+          href: https://gemini.google.com
+
+- Social & Community:
+    - YouTube:
+        - icon: youtube.png
+          href: https://youtube.com
+    - Reddit:
+        - icon: reddit.png
+          href: https://reddit.com
+    - Discord:
+        - icon: discord.png
+          href: https://discord.com/app
+    - X / Twitter:
+        - icon: x.png
+          href: https://x.com
