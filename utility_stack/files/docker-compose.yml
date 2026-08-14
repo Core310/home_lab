@@ -26,7 +26,7 @@ services:
     restart: unless-stopped
     network_mode: host
     environment:
-      - KEY=${BESZEL_KEY:-}
+      - KEY=${BESZEL_KEY:-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC/fTQojpiB3+XlJbmbI3/RYbLXoNr+n06ph9hacXC5z}
       - PORT=45876
     volumes:
       # Map the standard docker socket
