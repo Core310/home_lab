@@ -2,22 +2,33 @@
     email {$ACME_EMAIL:admin@somethingsomething.fyi}
 }
 
+(cf_tls) {
+    tls {
+        dns cloudflare {$CLOUDFLARE_API_TOKEN}
+        resolvers 1.1.1.1 8.8.8.8
+    }
+}
+
 # Dashboard & Identity
 dash.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9302
+    import cf_tls
+    reverse_proxy host.docker.internal:9302
 }
 
 auth.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9300
+    import cf_tls
+    reverse_proxy host.docker.internal:9300
 }
 
 # Personal Cloud & Vault
 vault.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9400
+    import cf_tls
+    reverse_proxy host.docker.internal:9400
 }
 
 photos.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9401 {
+    import cf_tls
+    reverse_proxy host.docker.internal:9401 {
         header_up Host {host}
         header_up X-Real-IP {remote}
         header_up X-Forwarded-For {remote}
@@ -26,68 +37,85 @@ photos.{$DOMAIN:somethingsomething.fyi} {
 }
 
 git.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9402
+    import cf_tls
+    reverse_proxy host.docker.internal:9402
 }
 
 # Life Management
 recipes.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9500
+    import cf_tls
+    reverse_proxy host.docker.internal:9500
 }
 
 garage.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9501
+    import cf_tls
+    reverse_proxy host.docker.internal:9501
 }
 
 wishlist.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9502
+    import cf_tls
+    reverse_proxy host.docker.internal:9502
 }
 
 speedtest.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9503
+    import cf_tls
+    reverse_proxy host.docker.internal:9503
 }
 
 # Media Automation
 anime.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9003
+    import cf_tls
+    reverse_proxy host.docker.internal:9003
 }
 
 torrents.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9000
+    import cf_tls
+    reverse_proxy host.docker.internal:9000
 }
 
 sonarr.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9001
+    import cf_tls
+    reverse_proxy host.docker.internal:9001
 }
 
 prowlarr.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9002
+    import cf_tls
+    reverse_proxy host.docker.internal:9002
 }
 
 music.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9101
+    import cf_tls
+    reverse_proxy host.docker.internal:9101
 }
 
 files.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9100
+    import cf_tls
+    reverse_proxy host.docker.internal:9100
 }
 
 # System Utilities
 portainer.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9200
+    import cf_tls
+    reverse_proxy host.docker.internal:9200
 }
 
 pdf.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9203
+    import cf_tls
+    reverse_proxy host.docker.internal:9203
 }
 
 convert.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9204
+    import cf_tls
+    reverse_proxy host.docker.internal:9204
 }
 
 status.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9202
+    import cf_tls
+    reverse_proxy host.docker.internal:9202
 }
 
 pihole.{$DOMAIN:somethingsomething.fyi} {
-    reverse_proxy localhost:9600
+    import cf_tls
+    redir / /admin/ 308
+    reverse_proxy host.docker.internal:9600
 }

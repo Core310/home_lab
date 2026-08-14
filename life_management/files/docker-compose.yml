@@ -53,7 +53,8 @@ services:
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
       - TZ=${TZ:-America/Chicago}
-      - APP_KEY=${SPEEDTEST_APP_KEY:-base64:eW91cl9zZWN1cmVfc3BlZWR0ZXN0X2FwcF9rZXlfMzJieXRlczE=}
+      - APP_KEY=${SPEEDTEST_APP_KEY:-base64:qKIdfI8rgZSxpwqVvRdf3RgW1S7y7qZvNg1NrfrRyBQ=}
+      - APP_URL=https://speedtest.somethingsomething.fyi
       - DB_CONNECTION=sqlite
     volumes:
       - ./data/speedtest_tracker:/config

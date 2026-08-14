@@ -32,6 +32,7 @@ services:
     environment:
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
+      - HOMEPAGE_ALLOWED_HOSTS=*
 
   authentik-postgres:
     image: postgres:16-alpine

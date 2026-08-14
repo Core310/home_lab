@@ -116,5 +116,6 @@ status.{$DOMAIN:somethingsomething.fyi} {
 
 pihole.{$DOMAIN:somethingsomething.fyi} {
     import cf_tls
+    redir / /admin/ 308
     reverse_proxy host.docker.internal:9600
 }
