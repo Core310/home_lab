@@ -18,17 +18,23 @@ The stack deploys the following isolated services:
 - **Filebrowser**: A lightweight, modern web-based file manager for visually clicking and dragging files around your server via a web browser.
 - **Dufs**: A blazing-fast Rust WebDAV server running silently so mobile apps (like Poweramp via a WebDAV client) can natively stream your server's audio library.
 
+### Host Maintenance & Reliability Stack (`host_maintenance/`)
+- **Unified Database Backups**: Nightly atomic backups of all SQLite and critical application databases (Vaultwarden, Mealie, LubeLogger, Sonarr, etc.) mirrored to the OS drive (`/home/arika/mirrors/databases/`) with 14-day compressed rolling retention.
+- **SMART Disk Health & Self-Tests**: Dynamic hardware auto-discovery (`smartctl --scan`) monitoring bad/reallocated sectors across all physical drives daily, with weekly short tests and monthly long surface scans.
+- **Automated Container Updates**: Watchtower auto-updates running Docker containers every Sunday at 02:00 AM.
+- **Weekly Auto-Reboot**: Graceful system restart every Sunday at 05:00 AM to apply kernel/OS updates and clean runtime state, automatically bringing all `unless-stopped` containers back online.
+
 ## How It Works: Ansible + Docker
 
 **You only need to run the Ansible playbook.**
 
 Here is what the Ansible playbook (`site.yml`) automates for you:
-1. **Installs Prerequisites:** It automatically ensures `docker.io` and `docker-compose-v2` are installed on the host.
+1. **Installs Prerequisites:** It automatically ensures `docker.io`, `docker-compose-v2`, `smartmontools`, `sqlite3`, and `rsync` are installed on the host.
 2. **Scaffolds the File System:** It creates the exact directory structures required on the host (`/opt/media`, `/opt/media/downloads`, `/opt/media/jellyfin`) with the correct user permissions (`1000:1000`) so the containers can read and write without access denied errors.
 3. **Deploys the Code:** It creates the deployment folder (`/opt/foss_stack`) and copies your `docker-compose.yml` into it.
 4. **Spins Up the Stack:** Finally, Ansible executes the `docker compose up -d` command for you. 
 
-When the playbook finishes running, your entire infrastructure is online and humming.
+When the playbook finishes running, your entire infrastructure is online and humming. 
 
 ## Deployment Instructions
 
@@ -67,7 +73,23 @@ Deploy any stack simply by running its respective `run.sh` script:
 
 # 8. Automated Job Application Pipeline (ApplyPilot)
 ./job_applier/run.sh
+
+# 9. Host Maintenance & Reliability (Backups, SMART Health, Weekly Reboot)
+./host_maintenance/run.sh
 ```
+
+---
+
+## Maintenance & Automation Schedule
+
+| Time | Frequency | Task | Description |
+| :--- | :--- | :--- | :--- |
+| **01:00 AM** | **Daily** | **Database Mirror & Archive** | Atomic snapshots synced to `/home/arika/mirrors/databases/` |
+| **01:30 AM** | **Daily** | **SMART Health Audit** | Scans all physical drives for bad/pending sectors and alerts |
+| **03:00 AM** | **Saturdays** | **SMART Short Self-Test** | 1-minute firmware test across all drives |
+| **01:00 AM** | **1st of Month**| **SMART Long Self-Test** | Full drive surface scan (~3.8 hrs, non-reboot night) |
+| **02:00 AM** | **Sundays** | **Watchtower Updates** | Automatically pulls fresh images and recreates containers |
+| **05:00 AM** | **Sundays** | **Host Reboot** | Graceful OS restart; containers auto-recover immediately |
 
 ---
 
@@ -87,7 +109,7 @@ Deploy any stack simply by running its respective `run.sh` script:
 | **9503** | **Speedtest Tracker** | `speedtest.somethingsomething.fyi` | Automated Bandwidth & Latency Grapher |
 | **9003** | **Jellyfin** | `anime.somethingsomething.fyi` | Streaming Media Server |
 | **9000** | **qBittorrent** | `torrents.somethingsomething.fyi` | BitTorrent Client |
-| **9001** | **Sonarr** | `sonarr.somethingsomething.fyi` | TV & Anime Automation |
+| **9001** | **Sonarr** | `sonarr.somethingsomething.fyi` | TV & Anime Acquisition |
 | **9002** | **Prowlarr** | `prowlarr.somethingsomething.fyi` | Torrent Indexer Aggregator |
 | **9101** | **Lidarr** | `music.somethingsomething.fyi` | Music Automation |
 | **9100** | **Filebrowser** | `files.somethingsomething.fyi` | Browser-based File Explorer |
@@ -96,5 +118,5 @@ Deploy any stack simply by running its respective `run.sh` script:
 | **9202** | **Beszel Hub** | `status.somethingsomething.fyi` | Server Metrics & Hardware Monitor |
 | **9203** | **BentoPDF** | `pdf.somethingsomething.fyi` | Privacy-focused PDF Tools |
 | **9204** | **VERT** | `convert.somethingsomething.fyi` | Offline Universal File Converter |
-| **53 / 80** | **Pi-hole** | `pihole.somethingsomething.fyi` | DNS Sinkhole & Adblocker |
-
+| **Internal** | **Watchtower** | `N/A` | Automated Container Updater (Sun 02:00) |
+| **53 / 80** | **Pi-hole** | `pihole.somethingsomething.fyi` | DNS Sinkhole & Adblocker (Tailscale All-Origins) |

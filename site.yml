@@ -26,3 +26,6 @@
 
 - name: Deploy Automated Job Application Pipeline (ApplyPilot)
   import_playbook: job_applier/site.yml
+
+- name: Configure Host Maintenance & Reliability (Backups, SMART Health, Weekly Reboot)
+  import_playbook: host_maintenance/site.yml

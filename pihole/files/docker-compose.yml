@@ -11,6 +11,7 @@ services:
       TZ: '${TZ:-America/Chicago}'
       WEBPASSWORD: '${WEBPASSWORD:-admin}'
       FTLCONF_DNS_UPSTREAMS: '1.1.1.1;1.0.0.1'
+      FTLCONF_dns_listeningMode: 'ALL'
     volumes:
       - './etc-pihole:/etc/pihole'
       - './etc-dnsmasq.d:/etc/dnsmasq.d'

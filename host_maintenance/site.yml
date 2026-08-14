@@ -1,0 +1,79 @@
+---
+- name: GSD Host Maintenance & Reliability (Backups, SMART Health, Weekly Reboot)
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure maintenance utilities are installed (smartmontools, sqlite3, rsync, cron)
+      apt:
+        name:
+          - smartmontools
+          - sqlite3
+          - rsync
+          - cron
+        state: present
+
+    - name: Ensure cron service is enabled and running
+      systemd:
+        name: cron
+        state: started
+        enabled: yes
+
+    - name: Deploy maintenance scripts to /usr/local/bin
+      copy:
+        src: "files/{{ item }}"
+        dest: "/usr/local/bin/{{ item }}"
+        mode: '0755'
+        owner: root
+        group: root
+      loop:
+        - backup-homelab-databases.sh
+        - disk-health-check.sh
+        - disk-selftest.sh
+
+    - name: Configure nightly homelab database backup cron job (01:00 AM)
+      cron:
+        name: "Homelab Unified Database Backup"
+        cron_file: homelab-backup
+        minute: "0"
+        hour: "1"
+        job: "/usr/bin/flock -n /var/run/homelab-backup.lock /usr/local/bin/backup-homelab-databases.sh >> /var/log/homelab-backup.log 2>&1"
+        user: root
+
+    - name: Configure daily SMART health check cron job (01:30 AM)
+      cron:
+        name: "Daily SMART Health Check"
+        cron_file: disk-health
+        minute: "30"
+        hour: "1"
+        job: "/usr/local/bin/disk-health-check.sh >/dev/null 2>&1"
+        user: root
+
+    - name: Configure weekly SMART short self-test cron job (Saturday 03:00 AM)
+      cron:
+        name: "Weekly SMART Short Self-Test"
+        cron_file: disk-health
+        minute: "0"
+        hour: "3"
+        weekday: "6"
+        job: "/usr/local/bin/disk-selftest.sh short >/dev/null 2>&1"
+        user: root
+
+    - name: Configure monthly SMART long self-test cron job (1st of month 01:00 AM)
+      cron:
+        name: "Monthly SMART Long Self-Test"
+        cron_file: disk-health
+        minute: "0"
+        hour: "1"
+        day: "1"
+        job: "/usr/local/bin/disk-selftest.sh long >/dev/null 2>&1"
+        user: root
+
+    - name: Configure weekly system reboot cron job (Sunday 05:00 AM)
+      cron:
+        name: "Weekly system reboot"
+        cron_file: weekly-reboot
+        minute: "0"
+        hour: "5"
+        weekday: "0"
+        job: "/sbin/shutdown -r now"
+        user: root

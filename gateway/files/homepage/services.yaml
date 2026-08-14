@@ -85,3 +85,8 @@
         icon: swap.png
         href: https://convert.somethingsomething.fyi
         description: File & Media Converter
+    - Watchtower:
+        icon: watchtower.png
+        description: Container Auto-Updater (Sun 02:00)
+        server: my-docker
+        container: watchtower

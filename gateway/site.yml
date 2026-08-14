@@ -51,6 +51,7 @@
         - settings.yaml
         - widgets.yaml
         - bookmarks.yaml
+        - docker.yaml
 
     - name: Generate .env file for Gateway Compose
       copy:
