@@ -1,0 +1,83 @@
+---
+# Homepage Services Configuration
+- Portal & Security:
+    - Authentik:
+        icon: authentik.png
+        href: http://localhost:9300
+        description: SSO & Identity Management
+    - Portainer:
+        icon: portainer.png
+        href: http://localhost:9200
+        description: Container Management
+    - Beszel Hub:
+        icon: beszel.png
+        href: http://localhost:9202
+        description: System Resource Monitoring
+
+- Cloud & Code:
+    - Vaultwarden:
+        icon: vaultwarden.png
+        href: http://localhost:9400
+        description: Password Manager
+    - Immich:
+        icon: immich.png
+        href: http://localhost:9401
+        description: Photos & Video Backup
+    - Gitea:
+        icon: gitea.png
+        href: http://localhost:9402
+        description: Self-hosted Git Service
+
+- Lifestyle & Home:
+    - Mealie:
+        icon: mealie.png
+        href: http://localhost:9500
+        description: Recipe & Meal Planner
+    - LubeLogger:
+        icon: lubelogger.png
+        href: http://localhost:9501
+        description: Vehicle Maintenance Tracker
+    - Christmas Community:
+        icon: gift.png
+        href: http://localhost:9502
+        description: Secret Santa & Wishlists
+    - Speedtest Tracker:
+        icon: speedtest-tracker.png
+        href: http://localhost:9503
+        description: Bandwidth Monitoring
+
+- Media Stack:
+    - Jellyfin:
+        icon: jellyfin.png
+        href: http://localhost:9003
+        description: Media Streaming
+    - qBittorrent:
+        icon: qbittorrent.png
+        href: http://localhost:9000
+        description: Torrent Client
+    - Sonarr:
+        icon: sonarr.png
+        href: http://localhost:9001
+        description: TV & Anime Management
+    - Prowlarr:
+        icon: prowlarr.png
+        href: http://localhost:9002
+        description: Indexer Manager
+    - Lidarr:
+        icon: lidarr.png
+        href: http://localhost:9101
+        description: Music Management
+    - Filebrowser:
+        icon: filebrowser.png
+        href: http://localhost:9100
+        description: Web File Manager
+
+- Tools:
+    - BentoPDF:
+        icon: pdf.png
+        href: http://localhost:9203
+        description: Offline PDF Tools
+    - VERT:
+        icon: swap.png
+        href: http://localhost:9204
+        description: Media & Document Converter

@@ -1,0 +1,10 @@
+---
+- logo:
+    icon: https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/homelab.png
+- search:
+    provider: duckduckgo
+    target: _blank
+- resources:
+    cpu: true
+    memory: true
+    disk: /

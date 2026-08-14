@@ -1,27 +1,54 @@
 ---
 - name: GSD Pi-hole + Cloudflare WARP Deployment
-  hosts: homelab_server
+  hosts: all
   become: yes
+  vars:
+    target_tz: "{{ timezone | default('America/Chicago') }}"
+    pihole_password: "{{ webpassword | default('admin') }}"
+
   tasks:
-    - name: Ensure Podman and Podman Compose are installed
+    - name: Ensure Docker and Docker Compose plugin are installed
       apt:
         name:
-          - podman
-          - podman-compose
+          - docker-ce
+          - docker-compose-plugin
         state: present
-        update_cache: yes
 
-    - name: Create FOSS network security deployment directory
+    - name: Disable systemd-resolved DNSStubListener to free port 53 for Pi-hole
+      lineinfile:
+        path: /etc/systemd/resolved.conf
+        regexp: '^#?DNSStubListener='
+        line: 'DNSStubListener=no'
+      register: resolved_config
+
+    - name: Symlink static resolv.conf when DNSStubListener is disabled
       file:
-        path: /opt/pihole_stack
-        state: directory
+        src: /run/systemd/resolve/resolv.conf
+        dest: /etc/resolv.conf
+        state: link
+        force: yes
+      when: resolved_config.changed
 
-    - name: Copy docker-compose.yml to the host
+    - name: Restart systemd-resolved
+      service:
+        name: systemd-resolved
+        state: restarted
+      when: resolved_config.changed
+
+    - name: Generate .env file for Pi-hole Compose
+      copy:
+        dest: "{{ playbook_dir }}/.env"
+        content: |
+          TZ={{ target_tz }}
+          WEBPASSWORD={{ pihole_password }}
+        mode: '0644'
+
+    - name: Copy docker-compose.yml into stack directory
       copy:
         src: files/docker-compose.yml
-        dest: /opt/pihole_stack/docker-compose.yml
+        dest: "{{ playbook_dir }}/docker-compose.yml"
 
     - name: Spin up the Pi-hole + Cloudflare DoH stack
-      command: podman-compose up -d
+      command: docker compose up -d
       args:
-        chdir: /opt/pihole_stack
+        chdir: "{{ playbook_dir }}"

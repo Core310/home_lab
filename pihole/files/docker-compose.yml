@@ -1,13 +1,4 @@
-version: '3.8'
-
 services:
-  dnscrypt-proxy:
-    image: klizhentas/dnscrypt-proxy:latest
-    container_name: dnscrypt-proxy
-    restart: unless-stopped
-    networks:
-      - dnsnet
-
   pihole:
     image: pihole/pihole:latest
     container_name: pihole
@@ -15,20 +6,11 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "80:80/tcp"
+      - "9600:80/tcp"
     environment:
-      TZ: 'America/Chicago'
-      WEBPASSWORD: 'your_secure_password'
-      # Point to dnscrypt-proxy instead of cloudflared
-      FTLCONF_DNS_UPSTREAMS: 'dnscrypt-proxy#53'
+      TZ: '${TZ:-America/Chicago}'
+      WEBPASSWORD: '${WEBPASSWORD:-admin}'
+      FTLCONF_DNS_UPSTREAMS: '1.1.1.1;1.0.0.1'
     volumes:
       - './etc-pihole:/etc/pihole'
       - './etc-dnsmasq.d:/etc/dnsmasq.d'
-    depends_on:
-      - dnscrypt-proxy
-    networks:
-      - dnsnet
-
-networks:
-  dnsnet:
-    driver: bridge

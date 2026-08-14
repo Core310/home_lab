@@ -7,8 +7,8 @@ services:
       - "9201:9443"
       - "9200:9000"
     volumes:
-      # Map the podman socket to docker.sock for compatibility
-      - /run/podman/podman.sock:/var/run/docker.sock
+      # Map the standard docker socket
+      - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
 
   beszel-hub:
@@ -25,9 +25,12 @@ services:
     container_name: beszel-agent
     restart: unless-stopped
     network_mode: host
+    environment:
+      - KEY=${BESZEL_KEY:-}
+      - PORT=45876
     volumes:
-      # Map the podman socket to docker.sock for compatibility
-      - /run/podman/podman.sock:/var/run/docker.sock:ro
+      # Map the standard docker socket
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
   bentopdf:
     image: bentopdf/bentopdf:latest

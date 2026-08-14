@@ -1,38 +1,39 @@
 ---
-- name: GSD Utility Stack Deployment (Migrated to Podman)
-  hosts: homelab_server
+- name: GSD Utility Stack Deployment (Docker)
+  hosts: all
   become: yes
   tasks:
-    - name: Ensure Podman, Podman Compose, and Git are installed
+    - name: Ensure Docker, Docker Compose plugin, and Git are installed
       apt:
         name:
-          - podman
-          - podman-compose
+          - docker-ce
+          - docker-compose-plugin
           - git
         state: present
-        update_cache: yes
-
-    - name: Enable the Podman socket for Docker compatibility (needed for Portainer/Beszel)
-      systemd:
-        name: podman.socket
-        state: started
-        enabled: yes
-
-    - name: Create Utility application deployment directory
-      file:
-        path: /opt/utility_stack
-        state: directory
 
     - name: Clone VERT repository for building
       git:
         repo: https://github.com/VERT-sh/VERT
-        dest: /opt/utility_stack/VERT_src
+        dest: "{{ playbook_dir }}/VERT_src"
         version: main
         depth: 1
+        force: yes
 
-    - name: Build VERT Podman image from source
+    - name: Patch svelte-stripe version in VERT for Svelte 5 build compatibility
+      replace:
+        path: "{{ playbook_dir }}/VERT_src/package.json"
+        regexp: '"svelte-stripe":\s*"[^"]+"'
+        replace: '"svelte-stripe": "^2.0.0"'
+
+    - name: Ensure VERT Dockerfile copies bun.lock for reproducible builds
+      replace:
+        path: "{{ playbook_dir }}/VERT_src/Dockerfile"
+        regexp: 'COPY package\.json \./'
+        replace: 'COPY package.json bun.lock* ./'
+
+    - name: Build VERT Docker image from source
       command: >
-        podman build -t vert-sh/vert 
+        docker build -t vert-sh/vert 
         --build-arg PUB_ENV=production 
         --build-arg PUB_HOSTNAME=vert.sh 
         --build-arg PUB_PLAUSIBLE_URL=https://plausible.example.com 
@@ -41,14 +42,14 @@
         --build-arg PUB_DISABLE_ALL_EXTERNAL_REQUESTS=false 
         --build-arg PUB_STRIPE_KEY="" .
       args:
-        chdir: /opt/utility_stack/VERT_src
+        chdir: "{{ playbook_dir }}/VERT_src"
 
-    - name: Copy docker-compose.yml to the host
+    - name: Copy docker-compose.yml into stack directory
       copy:
         src: files/docker-compose.yml
-        dest: /opt/utility_stack/docker-compose.yml
+        dest: "{{ playbook_dir }}/docker-compose.yml"
 
     - name: Spin up the Utility stack
-      command: podman-compose up -d
+      command: docker compose up -d
       args:
-        chdir: /opt/utility_stack
+        chdir: "{{ playbook_dir }}"

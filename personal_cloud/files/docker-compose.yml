@@ -1,0 +1,90 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      - WEBSOCKET_ENABLED=true
+      - SIGNUPS_ALLOWED=true
+    volumes:
+      - ./data/vaultwarden:/data
+    ports:
+      - "9400:80"
+      - "3012:3012"
+
+  immich-server:
+    image: ghcr.io/immich-app/immich-server:release
+    container_name: immich_server
+    volumes:
+      - ${PHOTOS_DIR:-/home/arika/D/photos}:/usr/src/app/upload
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - DB_HOSTNAME=immich-postgres
+      - DB_USERNAME=postgres
+      - DB_DATABASE_NAME=immich
+      - DB_PASSWORD=${IMMICH_DB_PASS:-immich_secure_db_pass}
+      - REDIS_HOSTNAME=immich-redis
+      - IMMICH_ENV=production
+    ports:
+      - "9401:2283"
+    depends_on:
+      - immich-redis
+      - immich-postgres
+    restart: unless-stopped
+
+  immich-machine-learning:
+    image: ghcr.io/immich-app/immich-machine-learning:release
+    container_name: immich_machine_learning
+    volumes:
+      - ./data/immich/model-cache:/cache
+    environment:
+      - IMMICH_ENV=production
+    restart: unless-stopped
+
+  immich-redis:
+    image: redis:alpine
+    container_name: immich_redis
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 10s
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  immich-postgres:
+    image: pgvector/pgvector:pg16
+    container_name: immich_postgres
+    environment:
+      POSTGRES_PASSWORD: ${IMMICH_DB_PASS:-immich_secure_db_pass}
+      POSTGRES_USER: postgres
+      POSTGRES_DB: immich
+    volumes:
+      - ./data/immich/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 20s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    environment:
+      - USER_UID=${PUID:-1000}
+      - USER_GID=${PGID:-1000}
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__server__ROOT_URL=http://localhost:9402/
+      - GITEA__server__HTTP_PORT=3000
+      - GITEA__server__SSH_PORT=2222
+      - GITEA__server__SSH_LISTEN_PORT=22
+    volumes:
+      - ./data/gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "9402:3000"
+      - "2222:22"
+    restart: unless-stopped

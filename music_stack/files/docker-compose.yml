@@ -5,13 +5,13 @@ services:
     image: lscr.io/linuxserver/lidarr:latest
     container_name: lidarr
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Chicago}
     volumes:
       - ./config/lidarr:/config
-      # We mount /opt/media so Lidarr can see both /media/downloads (from qBittorrent) and /media/music (final destination)
-      - /opt/media:/media
+      # We mount MEDIA_DIR so Lidarr can see both downloads and music
+      - ${MEDIA_DIR:-/opt/media}:/media
     ports:
       - 9101:8686
     restart: unless-stopped
@@ -19,10 +19,10 @@ services:
   filebrowser:
     image: filebrowser/filebrowser:latest
     container_name: filebrowser
-    user: "1000:1000"
+    user: "${PUID:-1000}:${PGID:-1000}"
     volumes:
-      # We mount the entire /opt/media folder as the root directory for Filebrowser
-      - /opt/media:/srv
+      # We mount the entire MEDIA_DIR folder as the root directory for Filebrowser
+      - ${MEDIA_DIR:-/opt/media}:/srv
       # Mount config folder for database
       - ./config/filebrowser:/database
     # Tell filebrowser to use the db inside our config folder and serve the /srv directory
@@ -34,9 +34,9 @@ services:
   dufs:
     image: sigoden/dufs:latest
     container_name: dufs
-    user: "1000:1000"
+    user: "${PUID:-1000}:${PGID:-1000}"
     volumes:
-      - /opt/media:/data
+      - ${MEDIA_DIR:-/opt/media}:/data
     # -A enables all operations (upload/delete/etc), which is needed for WebDAV clients
     command: /data -A
     ports:

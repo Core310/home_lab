@@ -1,0 +1,20 @@
+---
+title: "Homelab Portal"
+theme: dark
+color: slate
+layout:
+  Portal & Security:
+    style: row
+    columns: 3
+  Cloud & Code:
+    style: row
+    columns: 3
+  Lifestyle & Home:
+    style: row
+    columns: 4
+  Media Stack:
+    style: row
+    columns: 3
+  Tools:
+    style: row
+    columns: 2

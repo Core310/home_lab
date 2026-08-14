@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "2019:2019"
+    environment:
+      - DOMAIN=${DOMAIN:-somethingsomething.fyi}
+      - ACME_EMAIL=${ACME_EMAIL:-admin@somethingsomething.fyi}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy_data:/data
+      - ./caddy_config:/config
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    ports:
+      - "9302:3000"
+    volumes:
+      - ./config/homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+
+  authentik-postgres:
+    image: postgres:16-alpine
+    container_name: authentik-postgres
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 30s
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ./data/authentik/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${AUTHENTIK_PG_PASS:-authentik_secure_pass}
+      POSTGRES_USER: ${AUTHENTIK_PG_USER:-authentik}
+      POSTGRES_DB: ${AUTHENTIK_PG_DB:-authentik}
+
+  authentik-redis:
+    image: redis:alpine
+    container_name: authentik-redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 10s
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - ./data/authentik/redis:/data
+
+  authentik-server:
+    image: ghcr.io/goauthentik/server:latest
+    container_name: authentik-server
+    restart: unless-stopped
+    command: server
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:-authentik_super_secret_key_change_me}
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgres
+      AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_PG_PASS:-authentik_secure_pass}
+    volumes:
+      - ./data/authentik/media:/media
+      - ./data/authentik/custom-templates:/templates
+    ports:
+      - "9300:9000"
+      - "9301:9443"
+    depends_on:
+      authentik-postgres:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_healthy
+
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:latest
+    container_name: authentik-worker
+    restart: unless-stopped
+    command: worker
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:-authentik_super_secret_key_change_me}
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgres
+      AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_PG_PASS:-authentik_secure_pass}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data/authentik/media:/media
+      - ./data/authentik/custom-templates:/templates
+      - ./data/authentik/certs:/certs
+    depends_on:
+      authentik-postgres:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_healthy

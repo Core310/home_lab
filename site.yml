@@ -1,0 +1,25 @@
+---
+# Master Orchestration Playbook for Entire Homelab Infrastructure
+# Executes all stack playbooks in sequential dependency order.
+# Each sub-playbook is idempotent: existing/running containers are verified and skipped.
+
+- name: Deploy Gateway & Ingress Stack (Caddy, Authentik, Homepage)
+  import_playbook: gateway/site.yml
+
+- name: Deploy Personal Cloud Stack (Vaultwarden, Immich, Gitea)
+  import_playbook: personal_cloud/site.yml
+
+- name: Deploy Life Management Stack (Mealie, LubeLogger, Christmas Community, Speedtest)
+  import_playbook: life_management/site.yml
+
+- name: Deploy Utility Stack (Portainer, Beszel Hub/Agent, BentoPDF, VERT)
+  import_playbook: utility_stack/site.yml
+
+- name: Deploy Anime & Acquisition Stack (qBittorrent, Sonarr, Prowlarr, Jellyfin)
+  import_playbook: anime_torrent_streamer/site.yml
+
+- name: Deploy Music & WebDAV Stack (Lidarr, Filebrowser, Dufs)
+  import_playbook: music_stack/site.yml
+
+- name: Deploy DNS & Network Security Stack (Pi-hole & DNSCrypt-Proxy)
+  import_playbook: pihole/site.yml

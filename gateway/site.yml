@@ -1,0 +1,76 @@
+---
+- name: GSD Gateway Stack Deployment (Caddy, Authentik, Homepage)
+  hosts: all
+  become: yes
+  vars:
+    target_user: "{{ lookup('env', 'SUDO_USER') if (lookup('env', 'SUDO_USER') != '' and lookup('env', 'SUDO_USER') != 'root') else lookup('env', 'USER') }}"
+    user_home: "{{ '/home/' + target_user if target_user != 'root' else '/root' }}"
+    domain_name: "{{ domain | default('somethingsomething.fyi') }}"
+    admin_email: "{{ email | default('admin@' + domain_name) }}"
+    target_puid: "{{ puid | default('1000') }}"
+    target_pgid: "{{ pgid | default('1000') }}"
+
+  tasks:
+    - name: Ensure Docker and Docker Compose plugin are installed
+      apt:
+        name:
+          - docker-ce
+          - docker-compose-plugin
+        state: present
+
+    - name: Create gateway directories on D drive
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0775'
+        owner: "{{ target_puid }}"
+        group: "{{ target_pgid }}"
+      loop:
+        - "{{ playbook_dir }}/caddy_data"
+        - "{{ playbook_dir }}/caddy_config"
+        - "{{ playbook_dir }}/config/homepage"
+        - "{{ playbook_dir }}/data/authentik/db"
+        - "{{ playbook_dir }}/data/authentik/redis"
+        - "{{ playbook_dir }}/data/authentik/media"
+        - "{{ playbook_dir }}/data/authentik/custom-templates"
+        - "{{ playbook_dir }}/data/authentik/certs"
+
+    - name: Copy Caddyfile into stack directory
+      copy:
+        src: files/Caddyfile
+        dest: "{{ playbook_dir }}/Caddyfile"
+        mode: '0644'
+
+    - name: Copy Homepage configurations
+      copy:
+        src: "files/homepage/{{ item }}"
+        dest: "{{ playbook_dir }}/config/homepage/{{ item }}"
+        mode: '0644'
+      loop:
+        - services.yaml
+        - settings.yaml
+        - widgets.yaml
+
+    - name: Generate .env file for Gateway Compose
+      copy:
+        dest: "{{ playbook_dir }}/.env"
+        content: |
+          DOMAIN={{ domain_name }}
+          ACME_EMAIL={{ admin_email }}
+          PUID={{ target_puid }}
+          PGID={{ target_pgid }}
+          AUTHENTIK_SECRET_KEY=authentik_gsd_secret_key_prod
+          AUTHENTIK_PG_USER=authentik
+          AUTHENTIK_PG_DB=authentik
+          AUTHENTIK_PG_PASS=authentik_gsd_secure_pgpass
+        mode: '0600'
+
+    - name: Copy docker-compose.yml into stack directory
+      copy:
+        src: files/docker-compose.yml
+        dest: "{{ playbook_dir }}/docker-compose.yml"
+
+    - name: Spin up the Gateway stack
+      command: docker compose up -d
+      args:
+        chdir: "{{ playbook_dir }}"

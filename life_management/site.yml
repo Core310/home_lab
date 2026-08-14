@@ -1,11 +1,10 @@
 ---
-- name: GSD Music and Management Stack Deployment
+- name: GSD Life Management Stack Deployment (Mealie, LubeLogger, Christmas Community, Speedtest)
   hosts: all
   become: yes
   vars:
     target_user: "{{ lookup('env', 'SUDO_USER') if (lookup('env', 'SUDO_USER') != '' and lookup('env', 'SUDO_USER') != 'root') else lookup('env', 'USER') }}"
     user_home: "{{ '/home/' + target_user if target_user != 'root' else '/root' }}"
-    media_base: "{{ media_dir | default((user_home + '/D/media') if ((user_home + '/D') is directory) else (user_home + '/media')) }}"
     target_puid: "{{ puid | default('1000') }}"
     target_pgid: "{{ pgid | default('1000') }}"
     target_tz: "{{ timezone | default('America/Chicago') }}"
@@ -18,30 +17,32 @@
           - docker-compose-plugin
         state: present
 
-    - name: Create music directory
+    - name: Create life management data directories
       file:
-        path: "{{ media_base }}/music"
+        path: "{{ item }}"
         state: directory
         mode: '0775'
         owner: "{{ target_puid }}"
         group: "{{ target_pgid }}"
+      loop:
+        - "{{ playbook_dir }}/data/mealie"
+        - "{{ playbook_dir }}/data/lubelogger/data"
+        - "{{ playbook_dir }}/data/lubelogger/config"
+        - "{{ playbook_dir }}/data/lubelogger/documents"
+        - "{{ playbook_dir }}/data/lubelogger/images"
+        - "{{ playbook_dir }}/data/lubelogger/temp"
+        - "{{ playbook_dir }}/data/lubelogger/log"
+        - "{{ playbook_dir }}/data/christmas_community"
+        - "{{ playbook_dir }}/data/speedtest_tracker"
 
-    - name: Create config directory for filebrowser database
-      file:
-        path: "{{ playbook_dir }}/config/filebrowser"
-        state: directory
-        mode: '0775'
-        owner: "{{ target_puid }}"
-        group: "{{ target_pgid }}"
-
-    - name: Generate .env file for Docker Compose
+    - name: Generate .env file for Life Management Compose
       copy:
         dest: "{{ playbook_dir }}/.env"
         content: |
-          MEDIA_DIR={{ media_base }}
           PUID={{ target_puid }}
           PGID={{ target_pgid }}
           TZ={{ target_tz }}
+          SPEEDTEST_APP_KEY=base64:eW91cl9zZWN1cmVfc3BlZWR0ZXN0X2FwcF9rZXlfMzJieXRlczE=
         mode: '0644'
 
     - name: Copy docker-compose.yml into stack directory
@@ -49,7 +50,7 @@
         src: files/docker-compose.yml
         dest: "{{ playbook_dir }}/docker-compose.yml"
 
-    - name: Spin up the Music and Management stack
+    - name: Spin up the Life Management stack
       command: docker compose up -d
       args:
         chdir: "{{ playbook_dir }}"

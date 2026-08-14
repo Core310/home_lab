@@ -2,18 +2,17 @@ version: '3.8'
 
 services:
 
-
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Chicago}
       - WEBUI_PORT=9000
     volumes:
       - ./config/qbittorrent:/config
-      - /opt/media/downloads:/downloads 
+      - ${MEDIA_DIR:-/opt/media}/downloads:/downloads 
     ports:
       - 9000:9000
       - 6881:6881
@@ -24,9 +23,9 @@ services:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Chicago}
     volumes:
       - ./config/prowlarr:/config
     ports:
@@ -37,12 +36,12 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Chicago}
     volumes:
       - ./config/sonarr:/config
-      - /opt/media:/media 
+      - ${MEDIA_DIR:-/opt/media}:/media 
     ports:
       - 9001:8989
     restart: unless-stopped
@@ -51,12 +50,12 @@ services:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Chicago}
     volumes:
       - ./config/jellyfin:/config
-      - /opt/media/jellyfin:/data/tvshows 
+      - ${MEDIA_DIR:-/opt/media}/jellyfin:/data/tvshows 
     ports:
       - 9003:8096
     restart: unless-stopped

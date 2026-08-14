@@ -1,0 +1,59 @@
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:latest
+    container_name: mealie
+    restart: unless-stopped
+    ports:
+      - "9500:9000"
+    environment:
+      - ALLOW_SIGNUPS=true
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Chicago}
+      - BASE_URL=http://localhost:9500
+    volumes:
+      - ./data/mealie:/app/data
+
+  lubelogger:
+    image: hargata/lubelogger:latest
+    container_name: lubelogger
+    restart: unless-stopped
+    ports:
+      - "9501:8080"
+    environment:
+      - LC_ALL=en_US.UTF-8
+      - LANG=en_US.UTF-8
+    volumes:
+      - ./data/lubelogger/data:/App/data
+      - ./data/lubelogger/config:/App/config
+      - ./data/lubelogger/documents:/App/documents
+      - ./data/lubelogger/images:/App/images
+      - ./data/lubelogger/temp:/App/temp
+      - ./data/lubelogger/log:/App/log
+
+  christmas-community:
+    image: wingysam/christmas-community:latest
+    container_name: christmas_community
+    restart: unless-stopped
+    ports:
+      - "9502:80"
+    environment:
+      - DATABASE_URL=file:/app/data/dev.db
+      - ORIGIN=http://localhost:9502
+    volumes:
+      - ./data/christmas_community:/app/data
+
+  speedtest-tracker:
+    image: lscr.io/linuxserver/speedtest-tracker:latest
+    container_name: speedtest_tracker
+    restart: unless-stopped
+    ports:
+      - "9503:80"
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-America/Chicago}
+      - APP_KEY=${SPEEDTEST_APP_KEY:-base64:eW91cl9zZWN1cmVfc3BlZWR0ZXN0X2FwcF9rZXlfMzJieXRlczE=}
+      - DB_CONNECTION=sqlite
+    volumes:
+      - ./data/speedtest_tracker:/config

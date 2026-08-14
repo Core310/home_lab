@@ -1,51 +1,84 @@
 ---
 - name: GSD FOSS Anime Stack Deployment
-  hosts: homelab_server
+  hosts: all
   become: yes
+  vars:
+    target_user: "{{ lookup('env', 'SUDO_USER') if (lookup('env', 'SUDO_USER') != '' and lookup('env', 'SUDO_USER') != 'root') else lookup('env', 'USER') }}"
+    user_home: "{{ '/home/' + target_user if target_user != 'root' else '/root' }}"
+    # Allows explicit override via -e media_dir=/custom/path, auto-detects D drive if present, or falls back to user_home/media
+    media_base: "{{ media_dir | default((user_home + '/D/media') if ((user_home + '/D') is directory) else (user_home + '/media')) }}"
+    target_puid: "{{ puid | default('1000') }}"
+    target_pgid: "{{ pgid | default('1000') }}"
+    target_tz: "{{ timezone | default('America/Chicago') }}"
+
+  handlers:
+    - name: Restart Docker
+      systemd:
+        name: docker
+        state: restarted
+
   tasks:
-    - name: Ensure Podman and Podman Compose are installed
+    - name: Ensure Docker and Docker Compose plugin are installed
       apt:
         name:
-          - podman
-          - podman-compose
+          - docker-ce
+          - docker-compose-plugin
         state: present
-        update_cache: yes
 
-    - name: Create a main media directory on the host server
+    - name: Configure Docker data-root to D drive if available
+      copy:
+        dest: /etc/docker/daemon.json
+        content: |
+          {
+            "data-root": "{{ user_home }}/D/docker"
+          }
+        mode: '0644'
+      notify: Restart Docker
+      when: (user_home + '/D') is directory
+
+    - name: Flush handlers to apply Docker config if changed
+      meta: flush_handlers
+
+    - name: Create main media directory
       file:
-        path: /opt/media
+        path: "{{ media_base }}"
         state: directory
         mode: '0775'
-        owner: "1000"
-        group: "1000"
+        owner: "{{ target_puid }}"
+        group: "{{ target_pgid }}"
 
-    - name: Create a subfolder strictly for qBittorrent to drop raw downloads
+    - name: Create downloads subfolder
       file:
-        path: /opt/media/downloads
+        path: "{{ media_base }}/downloads"
         state: directory
         mode: '0775'
-        owner: "1000"
-        group: "1000"
+        owner: "{{ target_puid }}"
+        group: "{{ target_pgid }}"
 
-    - name: Create a subfolder strictly for Jellyfin to read the final, organized media
+    - name: Create jellyfin media subfolder
       file:
-        path: /opt/media/jellyfin
+        path: "{{ media_base }}/jellyfin"
         state: directory
         mode: '0775'
-        owner: "1000"
-        group: "1000"
+        owner: "{{ target_puid }}"
+        group: "{{ target_pgid }}"
 
-    - name: Create FOSS application deployment directory
-      file:
-        path: /opt/foss_stack
-        state: directory
+    - name: Generate .env file for Docker Compose
+      copy:
+        dest: "{{ playbook_dir }}/.env"
+        content: |
+          MEDIA_DIR={{ media_base }}
+          PUID={{ target_puid }}
+          PGID={{ target_pgid }}
+          TZ={{ target_tz }}
+        mode: '0644'
 
-    - name: Copy docker-compose.yml to the host
+    - name: Copy docker-compose.yml into stack directory
       copy:
         src: files/docker-compose.yml
-        dest: /opt/foss_stack/docker-compose.yml
+        dest: "{{ playbook_dir }}/docker-compose.yml"
 
     - name: Spin up the entire FOSS stack
-      command: podman-compose up -d
+      command: docker compose up -d
       args:
-        chdir: /opt/foss_stack
+        chdir: "{{ playbook_dir }}"
