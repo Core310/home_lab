@@ -42,7 +42,7 @@
           PUID={{ target_puid }}
           PGID={{ target_pgid }}
           TZ={{ target_tz }}
-          SPEEDTEST_APP_KEY=base64:eW91cl9zZWN1cmVfc3BlZWR0ZXN0X2FwcF9rZXlfMzJieXRlczE=
+          SPEEDTEST_APP_KEY=base64:qKIdfI8rgZSxpwqVvRdf3RgW1S7y7qZvNg1NrfrRyBQ=
         mode: '0644'
 
     - name: Copy docker-compose.yml into stack directory
