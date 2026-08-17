@@ -1,0 +1,10 @@
+server:
+  database: "/home/filebrowser/data/database.db"
+  sources:
+    - name: "Media"
+      path: "/srv"
+auth:
+  methods:
+    password:
+      enabled: true
+      minLength: 5

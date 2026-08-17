@@ -34,6 +34,15 @@
         owner: "{{ target_puid }}"
         group: "{{ target_pgid }}"
 
+    - name: Ensure FileBrowser Quantum config.yaml exists
+      copy:
+        src: files/filebrowser_config.yaml
+        dest: "{{ playbook_dir }}/config/filebrowser/config.yaml"
+        mode: '0644'
+        owner: "{{ target_puid }}"
+        group: "{{ target_pgid }}"
+        force: no
+
     - name: Generate .env file for Docker Compose
       copy:
         dest: "{{ playbook_dir }}/.env"

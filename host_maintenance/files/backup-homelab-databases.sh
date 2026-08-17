@@ -51,6 +51,7 @@ backup_file "/home/arika/D/docs/home_lab/anime_torrent_streamer/config/sonarr/so
 backup_file "/home/arika/D/docs/home_lab/anime_torrent_streamer/config/prowlarr/prowlarr.db" "prowlarr/prowlarr.db"
 backup_file "/home/arika/D/docs/home_lab/anime_torrent_streamer/config/jellyfin/data/data/jellyfin.db" "jellyfin/jellyfin.db"
 backup_file "/home/arika/D/docs/home_lab/music_stack/config/lidarr/lidarr.db" "lidarr/lidarr.db"
+backup_file "/home/arika/D/docs/home_lab/music_stack/config/filebrowser/database.db" "filebrowser/database.db"
 backup_file "/home/arika/D/docs/home_lab/music_stack/config/filebrowser/filebrowser.db" "filebrowser/filebrowser.db"
 
 # 4. DNS & Adblocking (Pi-hole)
