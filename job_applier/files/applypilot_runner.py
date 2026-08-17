@@ -3,7 +3,8 @@
 ApplyPilot CSV Batch Orchestrator
 ---------------------------------
 Automates job applications by reading target URLs from a CSV file, executing
-ApplyPilot for each pending job, and updating the CSV tracking sheet in real-time.
+ApplyPilot for each pending job, auto-syncing logins to Vaultwarden, and listening
+for Workday email OTP verification codes.
 """
 
 import os
@@ -17,6 +18,25 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Tuple
+
+# Try loading python-dotenv if available
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+# Try importing Workday integrations
+try:
+    from workday_integrations import EmailOTPListener, VaultwardenSync
+except ImportError:
+    # Standalone fallback if invoked in isolated path
+    sys.path.append(str(Path(__file__).resolve().parent))
+    try:
+        from workday_integrations import EmailOTPListener, VaultwardenSync
+    except ImportError:
+        EmailOTPListener = None
+        VaultwardenSync = None
 
 # Setup Colored Terminal Output
 class Colors:
@@ -54,7 +74,6 @@ def load_jobs_csv(csv_path: Path) -> Tuple[List[Dict[str, str]], List[str]]:
     """Loads CSV file, detecting encoding and returning row dicts and header list."""
     if not csv_path.exists():
         logger.error(f"{Colors.RED}CSV file not found at: {csv_path}{Colors.RESET}")
-        # Create empty template
         with open(csv_path, mode="w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=DEFAULT_CSV_HEADERS)
             writer.writeheader()
@@ -82,8 +101,6 @@ def load_jobs_csv(csv_path: Path) -> Tuple[List[Dict[str, str]], List[str]]:
 def save_jobs_csv(csv_path: Path, rows: List[Dict[str, str]], headers: List[str]):
     """Atomically writes rows to CSV to prevent data corruption during unexpected halts."""
     temp_path = csv_path.with_suffix(".tmp")
-    
-    # Ensure all default headers exist
     for h in DEFAULT_CSV_HEADERS:
         if h not in headers:
             headers.append(h)
@@ -103,7 +120,6 @@ def get_row_field(row: Dict[str, str], aliases: List[str], default: str = "") ->
     return default
 
 def set_row_field(row: Dict[str, str], key: str, value: str):
-    # Try finding matching key
     for k in row.keys():
         if k.lower().replace(" ", "").replace("_", "") == key.lower().replace(" ", "").replace("_", ""):
             row[k] = value
@@ -112,25 +128,37 @@ def set_row_field(row: Dict[str, str], key: str, value: str):
 
 def execute_applypilot_for_url(
     target_url: str,
+    company: str,
     resume_path: Path,
     config_path: Path,
     dry_run: bool = False,
     headless: bool = True
 ) -> Tuple[bool, str]:
-    """Executes ApplyPilot automation for a single job URL."""
+    """Executes ApplyPilot automation for a single job URL with Workday & Vaultwarden hooks."""
+    is_workday = "myworkdayjobs" in target_url or "workday" in target_url.lower()
+
     if dry_run:
         logger.info(f"{Colors.YELLOW}[DRY-RUN] Simulating application for: {target_url}{Colors.RESET}")
+        if is_workday and VaultwardenSync:
+            vault = VaultwardenSync()
+            vault.record_login(company, target_url)
         time.sleep(1)
         return True, "Dry-run simulated successfully"
+
+    # Hook: Auto-record Workday login
+    if is_workday and VaultwardenSync:
+        try:
+            vault = VaultwardenSync()
+            vault.record_login(company, target_url)
+        except Exception as e:
+            logger.debug(f"Vaultwarden sync notice: {e}")
 
     # Search for ApplyPilot main entrypoint or CLI module
     repo_dir = Path(__file__).resolve().parent / "repo"
     app_root = Path(__file__).resolve().parent
-
     python_executable = sys.executable
     cmd = []
 
-    # Check for CLI executable or module
     if (repo_dir / "src" / "main.py").exists():
         cmd = [
             python_executable,
@@ -147,7 +175,6 @@ def execute_applypilot_for_url(
             "--resume", str(resume_path),
         ]
     else:
-        # Standalone Playwright fallback runner
         logger.info(f"{Colors.CYAN}Invoking ApplyPilot engine for direct target...{Colors.RESET}")
         cmd = [
             python_executable,
@@ -155,7 +182,6 @@ def execute_applypilot_for_url(
             f"""
 import sys
 print(f"Submitting application for URL: {target_url}")
-# ApplyPilot core integration hook
 sys.exit(0)
             """
         ]
@@ -174,7 +200,7 @@ sys.exit(0)
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
-            timeout=300 # 5 minute max per job
+            timeout=300
         )
 
         output = proc.stdout.strip() if proc.stdout else ""
@@ -203,12 +229,26 @@ def main():
     logger.info(f"Resume:     {Colors.BOLD}{resume_path}{Colors.RESET}")
     logger.info(f"Mode:       {'DRY-RUN' if args.dry_run else 'LIVE SUBMISSION'}")
 
+    # Check optional integrations
+    if EmailOTPListener:
+        otp_listener = EmailOTPListener()
+        if otp_listener.is_configured:
+            logger.info(f"Email OTP:  {Colors.GREEN}Enabled ({otp_listener.user}){Colors.RESET}")
+        else:
+            logger.info(f"Email OTP:  {Colors.YELLOW}Disabled (configure in .env when ready){Colors.RESET}")
+
+    if VaultwardenSync:
+        vault = VaultwardenSync()
+        if vault.is_configured:
+            logger.info(f"Vault Sync: {Colors.GREEN}Enabled ({vault.vault_url}){Colors.RESET}")
+        else:
+            logger.info(f"Vault Sync: {Colors.YELLOW}Local cache active (configure in .env when ready){Colors.RESET}")
+
     rows, headers = load_jobs_csv(csv_path)
     if not rows:
         logger.warning(f"{Colors.YELLOW}No rows found in {csv_path}. Add rows and run again.{Colors.RESET}")
         sys.exit(0)
 
-    # Filter pending jobs
     pending_indices = []
     for idx, row in enumerate(rows):
         status = get_row_field(row, ["Status", "status"], default="").lower()
@@ -245,6 +285,7 @@ def main():
 
         success, note = execute_applypilot_for_url(
             target_url=url,
+            company=company,
             resume_path=resume_path,
             config_path=config_path,
             dry_run=args.dry_run,
@@ -264,10 +305,8 @@ def main():
             set_row_field(row, "Notes", f"[{now_str}] {note}")
             logger.error(f"{Colors.RED}✖ FAILED: {note}{Colors.RESET}")
 
-        # Save state after EVERY application
         save_jobs_csv(csv_path, rows, headers)
 
-        # Rate-limiting delay between jobs
         if i < len(pending_indices) and args.delay > 0:
             logger.info(f"Waiting {args.delay}s before next application...")
             time.sleep(args.delay)

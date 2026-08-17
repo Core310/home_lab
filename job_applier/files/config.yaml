@@ -39,10 +39,22 @@ ats_settings:
     auto_create_account: true
     default_password_env: "WORKDAY_PASSWORD"
     timeout_seconds: 60
+    auto_fetch_email_otp: true
+    sync_to_vaultwarden: true
   greenhouse:
     auto_fill_demographics: true
   lever:
     auto_upload_resume: true
+
+integrations:
+  email_otp_listener:
+    enabled: true
+    sender_keyword: "myworkdayjobs"
+    poll_timeout_seconds: 60
+    poll_interval_seconds: 4
+  vaultwarden_sync:
+    enabled: true
+    save_local_audit_cache: true
 
 batch_runner:
   csv_file: "jobs.csv"

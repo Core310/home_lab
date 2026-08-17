@@ -81,6 +81,14 @@
         owner: "{{ target_puid }}"
         group: "{{ target_pgid }}"
 
+    - name: Deploy Workday Integrations module
+      copy:
+        src: files/workday_integrations.py
+        dest: "{{ app_dir }}/workday_integrations.py"
+        mode: '0644'
+        owner: "{{ target_puid }}"
+        group: "{{ target_pgid }}"
+
     - name: Deploy Plain Text Resume configuration
       copy:
         src: files/plain_text_resume.yaml
