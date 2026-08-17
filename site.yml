@@ -21,6 +21,9 @@
 - name: Deploy Music & WebDAV Stack (Lidarr, Filebrowser, Dufs)
   import_playbook: music_stack/site.yml
 
+- name: Deploy Manga Stack (Kavita, Suwayomi)
+  import_playbook: manga_stack/site.yml
+
 - name: Deploy DNS & Network Security Stack (Pi-hole & DNSCrypt-Proxy)
   import_playbook: pihole/site.yml
 

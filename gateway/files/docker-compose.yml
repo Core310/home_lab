@@ -31,8 +31,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - PUID=${PUID:-1000}
-      - PGID=${PGID:-1000}
+      - PGID=984
       - HOMEPAGE_ALLOWED_HOSTS=*
+    group_add:
+      - "984"
 
   authentik-postgres:
     image: postgres:16-alpine

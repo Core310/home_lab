@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  kavita:
+    image: ghcr.io/kareadita/kavita:latest
+    container_name: kavita
+    environment:
+      - TZ=${TZ:-America/Chicago}
+    volumes:
+      - ./config/kavita:/kavita/config
+      - ${MEDIA_DIR:-/opt/media}/manga:/manga
+    ports:
+      - "9700:5000"
+    restart: unless-stopped
+
+  suwayomi:
+    image: ghcr.io/suwayomi/suwayomi-server:latest
+    container_name: suwayomi
+    environment:
+      - TZ=${TZ:-America/Chicago}
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+    volumes:
+      - ./config/suwayomi:/home/suwayomi/.local/share/Tachidesk
+      - ${MEDIA_DIR:-/opt/media}/manga:/home/suwayomi/downloads
+    ports:
+      - "9701:4567"
+    restart: unless-stopped

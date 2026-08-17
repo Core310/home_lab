@@ -15,8 +15,17 @@ The stack deploys the following isolated services:
 
 ### Music & Management Stack (`music_stack/`)
 - **Lidarr**: The high-res audio (FLAC) equivalent to Sonarr. Automates finding and organizing music.
+- **Navidrome**: A self-hosted music streaming server with Subsonic API support. Connect mobile apps like Symfonium (Android) or play:Sub (iOS) for on-the-go listening.
+- **MeTube**: YouTube and Spotify audio ripper — paste a URL, get the audio file. Perfect for game OSTs, live recordings, and playlists.
 - **Filebrowser**: A lightweight, modern web-based file manager for visually clicking and dragging files around your server via a web browser.
 - **Dufs**: A blazing-fast Rust WebDAV server running silently so mobile apps (like Poweramp via a WebDAV client) can natively stream your server's audio library.
+
+### Manga Stack (`manga_stack/`)
+- **Kavita**: A self-hosted manga, comic, and book reader with OPDS support. Connect mobile apps like Mihon (Android) or Paperback (iOS) for reading on the go.
+- **Suwayomi**: A manga scraper and downloader server (Tachiyomi backend). Browse 1,300+ manga sources and automatically download chapters to your library.
+
+### Anime & Torrent Stack Extras
+- **slskd (Soulseek)**: P2P music discovery for lossless audio, game OSTs, and VGM. Routed through ProtonVPN for anonymity.
 
 ### Host Maintenance & Reliability Stack (`host_maintenance/`)
 - **Unified Database Backups**: Nightly atomic backups of all SQLite and critical application databases (Vaultwarden, Mealie, LubeLogger, Sonarr, etc.) mirrored to the OS drive (`/home/arika/mirrors/databases/`) with 14-day compressed rolling retention.
@@ -65,16 +74,19 @@ Deploy any stack simply by running its respective `run.sh` script:
 # 5. Anime & Torrent Stack (qBittorrent, Sonarr, Prowlarr, Jellyfin)
 ./anime_torrent_streamer/run.sh
 
-# 6. Music & WebDAV Stack (Lidarr, Filebrowser, Dufs)
+# 6. Music & WebDAV Stack (Lidarr, Navidrome, MeTube, Filebrowser, Dufs)
 ./music_stack/run.sh
 
-# 7. DNS & Network Security Stack (Pi-hole, DNSCrypt-Proxy)
+# 7. Manga Stack (Kavita, Suwayomi)
+./manga_stack/run.sh
+
+# 8. DNS & Network Security Stack (Pi-hole, DNSCrypt-Proxy)
 ./pihole/run.sh
 
-# 8. Automated Job Application Pipeline (ApplyPilot)
+# 9. Automated Job Application Pipeline (ApplyPilot)
 ./job_applier/run.sh
 
-# 9. Host Maintenance & Reliability (Backups, SMART Health, Weekly Reboot)
+# 10. Host Maintenance & Reliability (Backups, SMART Health, Weekly Reboot)
 ./host_maintenance/run.sh
 ```
 
@@ -108,15 +120,37 @@ Deploy any stack simply by running its respective `run.sh` script:
 | **9502** | **Christmas Community**| `wishlist.somethingsomething.fyi` | Holiday Wishlists & Secret Santa |
 | **9503** | **Speedtest Tracker** | `speedtest.somethingsomething.fyi` | Automated Bandwidth & Latency Grapher |
 | **9003** | **Jellyfin** | `anime.somethingsomething.fyi` | Streaming Media Server |
-| **9000** | **qBittorrent** | `torrents.somethingsomething.fyi` | BitTorrent Client |
+| **9000** | **qBittorrent** | `torrents.somethingsomething.fyi` | BitTorrent Client (ProtonVPN) |
 | **9001** | **Sonarr** | `sonarr.somethingsomething.fyi` | TV & Anime Acquisition |
-| **9002** | **Prowlarr** | `prowlarr.somethingsomething.fyi` | Torrent Indexer Aggregator |
+| **9002** | **Prowlarr** | `prowlarr.somethingsomething.fyi` | Torrent Indexer Aggregator (ProtonVPN) |
+| **9105** | **slskd** | `soulseek.somethingsomething.fyi` | Soulseek P2P Audio Downloader (ProtonVPN) |
 | **9101** | **Lidarr** | `music.somethingsomething.fyi` | Music Automation |
+| **9103** | **Navidrome** | `player.somethingsomething.fyi` | Subsonic Music Streaming Server |
+| **9104** | **MeTube** | `music-dl.somethingsomething.fyi` | Web Video & Audio Downloader (yt-dlp) |
 | **9100** | **Filebrowser** | `files.somethingsomething.fyi` | Browser-based File Explorer |
 | **9102** | **Dufs** | `webdav.somethingsomething.fyi` | Fast Rust WebDAV Server |
+| **9700** | **Kavita** | `manga.somethingsomething.fyi` | Manga & Comic Reader (OPDS) |
+| **9701** | **Suwayomi** | `suwayomi.somethingsomething.fyi` | Manga Scraper & Downloader |
 | **9200 / 9201** | **Portainer** | `portainer.somethingsomething.fyi` | Docker Container UI |
 | **9202** | **Beszel Hub** | `status.somethingsomething.fyi` | Server Metrics & Hardware Monitor |
 | **9203** | **BentoPDF** | `pdf.somethingsomething.fyi` | Privacy-focused PDF Tools |
 | **9204** | **VERT** | `convert.somethingsomething.fyi` | Offline Universal File Converter |
 | **Internal** | **Watchtower** | `N/A` | Automated Container Updater (Sun 02:00) |
 | **53 / 80** | **Pi-hole** | `pihole.somethingsomething.fyi` | DNS Sinkhole & Adblocker (Tailscale All-Origins) |
+
+---
+
+## Recommended Mobile Companion Apps
+
+- **Music Streaming**:
+  - **Android**: [Symfonium](https://play.google.com/store/apps/details?id=app.symfonium.music) (Subsonic client) or Ultrasonic
+  - **iOS**: [play:Sub](https://apps.apple.com/app/play-sub-music-streamer/id955329386) or Amperfy
+  - *Connect to*: `https://player.somethingsomething.fyi`
+- **Anime & Video Streaming**:
+  - **Android**: [Findroid](https://play.google.com/store/apps/details?id=dev.jdtech.jellyfin) or official Jellyfin
+  - **iOS**: [Swiftfin](https://apps.apple.com/app/swiftfin/id1604098728)
+  - *Connect to*: `https://anime.somethingsomething.fyi`
+- **Manga & Comics**:
+  - **Android**: [Mihon](https://mihon.app/) or [Kotatsu](https://kotatsu.app/)
+  - **iOS**: [Paperback](https://paperback.moe/) or Panels
+  - *Connect to*: `https://manga.somethingsomething.fyi/api/opds/{api-key}` (Kavita OPDS) or Suwayomi extension

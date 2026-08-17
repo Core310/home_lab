@@ -75,6 +75,27 @@
         icon: filebrowser.png
         href: https://files.somethingsomething.fyi
         description: Cloud File Manager
+    - Kavita:
+        icon: kavita.png
+        href: https://manga.somethingsomething.fyi
+        description: Manga & Comic Reader
+    - Suwayomi:
+        icon: tachidesk.png
+        href: https://suwayomi.somethingsomething.fyi
+        description: Manga Scraper & Downloader
+    - Navidrome:
+        icon: navidrome.png
+        href: https://player.somethingsomething.fyi
+        description: Music Streaming & Web Player
+    - MeTube:
+        icon: metube.png
+        href: https://music-dl.somethingsomething.fyi
+        description: YouTube & Spotify Downloader
+    - slskd:
+        icon: soulseek.png
+        href: https://soulseek.somethingsomething.fyi
+        description: Soulseek OST & Lossless P2P
+
 
 - Utilities & Tools:
     - BentoPDF:

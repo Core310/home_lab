@@ -14,6 +14,8 @@ services:
       - ${MEDIA_DIR:-/opt/media}:/media
     ports:
       - 9101:8686
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
 
   filebrowser:
@@ -41,4 +43,36 @@ services:
     command: /data -A
     ports:
       - 9102:5000
+    restart: unless-stopped
+
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    user: "${PUID:-1000}:${PGID:-1000}"
+    environment:
+      - ND_SCANSCHEDULE=1h
+      - ND_LOGLEVEL=info
+      - ND_SESSIONTIMEOUT=24h
+      - ND_BASEURL=
+    volumes:
+      - ./config/navidrome:/data
+      - ${MEDIA_DIR:-/opt/media}/music:/music:ro
+    ports:
+      - 9103:4533
+    restart: unless-stopped
+
+  metube:
+    image: ghcr.io/alexta69/metube:latest
+    container_name: metube
+    user: "${PUID:-1000}:${PGID:-1000}"
+    environment:
+      - DOWNLOAD_DIR=/downloads
+      - AUDIO_DOWNLOAD_DIR=/downloads
+      - DEFAULT_OPTION=bestaudio
+      - OUTPUT_TEMPLATE=%(artist,uploader)s - %(playlist_title,album)s/%(playlist_index&{:02d} - |)s%(title)s.%(ext)s
+      - OUTPUT_TEMPLATE_PLAYLIST=%(playlist_title,album)s/%(playlist_index&{:02d} - |)s%(title)s.%(ext)s
+    volumes:
+      - ${MEDIA_DIR:-/opt/media}/music:/downloads
+    ports:
+      - 9104:8081
     restart: unless-stopped

@@ -20,6 +20,7 @@ utility_stack/docker-compose.yml
 gateway/docker-compose.yml
 personal_cloud/docker-compose.yml
 life_management/docker-compose.yml
+manga_stack/docker-compose.yml
 
 # Job Applier runtime
 job_applier/app/.venv/

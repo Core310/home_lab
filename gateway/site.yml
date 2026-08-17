@@ -53,12 +53,6 @@
         - bookmarks.yaml
         - docker.yaml
 
-    - name: Read existing CLOUDFLARE_API_TOKEN from .env if present
-      shell: "grep -E '^CLOUDFLARE_API_TOKEN=' {{ playbook_dir }}/.env | cut -d '=' -f2- || true"
-      register: existing_cf_token
-      changed_when: false
-      failed_when: false
-
     - name: Generate .env file for Gateway Compose
       copy:
         dest: "{{ playbook_dir }}/.env"
@@ -71,7 +65,7 @@
           AUTHENTIK_PG_USER=authentik
           AUTHENTIK_PG_DB=authentik
           AUTHENTIK_PG_PASS=authentik_gsd_secure_pgpass
-          CLOUDFLARE_API_TOKEN={{ lookup('env', 'CLOUDFLARE_API_TOKEN') | default(existing_cf_token.stdout | default('', true), true) }}
+          CLOUDFLARE_API_TOKEN={{ lookup('env', 'CLOUDFLARE_API_TOKEN') | default(cloudflare_api_token | default(''), true) }}
         mode: '0600'
 
     - name: Copy docker-compose.yml into stack directory

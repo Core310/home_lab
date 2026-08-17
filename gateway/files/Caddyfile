@@ -9,6 +9,13 @@
     }
 }
 
+(tailnet_trusted) {
+    @private_net remote_ip 100.64.0.0/10 fd7a:115c:a1e0::/48 192.168.0.0/16 10.0.0.0/8 172.16.0.0/12 127.0.0.1 ::1
+    reverse_proxy host.docker.internal:{args[0]} {
+        header_up @private_net X-Forwarded-For 127.0.0.1
+    }
+}
+
 # Dashboard & Identity
 dash.{$DOMAIN:somethingsomething.fyi} {
     import cf_tls
@@ -75,23 +82,49 @@ torrents.{$DOMAIN:somethingsomething.fyi} {
 
 sonarr.{$DOMAIN:somethingsomething.fyi} {
     import cf_tls
-    reverse_proxy host.docker.internal:9001
+    import tailnet_trusted 9001
 }
 
 prowlarr.{$DOMAIN:somethingsomething.fyi} {
     import cf_tls
-    reverse_proxy host.docker.internal:9002
+    import tailnet_trusted 9002
 }
 
 music.{$DOMAIN:somethingsomething.fyi} {
     import cf_tls
-    reverse_proxy host.docker.internal:9101
+    import tailnet_trusted 9101
 }
 
 files.{$DOMAIN:somethingsomething.fyi} {
     import cf_tls
     reverse_proxy host.docker.internal:9100
 }
+
+manga.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
+    reverse_proxy host.docker.internal:9700
+}
+
+suwayomi.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
+    reverse_proxy host.docker.internal:9701
+}
+
+player.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
+    reverse_proxy host.docker.internal:9103
+}
+
+music-dl.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
+    reverse_proxy host.docker.internal:9104
+}
+
+soulseek.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
+    reverse_proxy host.docker.internal:9105
+}
+
 
 # System Utilities
 portainer.{$DOMAIN:somethingsomething.fyi} {
