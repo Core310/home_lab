@@ -25,7 +25,7 @@ The stack deploys the following isolated services:
 - **Suwayomi**: A manga scraper and downloader server (Tachiyomi backend). Browse 1,300+ manga sources and automatically download chapters to your library.
 
 ### Anime & Torrent Stack Extras
-- **slskd (Soulseek)**: P2P music discovery for lossless audio, game OSTs, and VGM. Routed through ProtonVPN for anonymity.
+- **slskd (Soulseek)**: P2P music discovery for lossless audio, game OSTs, and VGM. Routed through Cloudflare WARP VPN for privacy.
 
 ### Host Maintenance & Reliability Stack (`host_maintenance/`)
 - **Unified Database Backups**: Nightly atomic backups of all SQLite and critical application databases (Vaultwarden, Mealie, LubeLogger, Sonarr, etc.) mirrored to the OS drive (`/home/arika/mirrors/databases/`) with 14-day compressed rolling retention.
@@ -120,10 +120,10 @@ Deploy any stack simply by running its respective `run.sh` script:
 | **9502** | **Christmas Community**| `wishlist.somethingsomething.fyi` | Holiday Wishlists & Secret Santa |
 | **9503** | **Speedtest Tracker** | `speedtest.somethingsomething.fyi` | Automated Bandwidth & Latency Grapher |
 | **9003** | **Jellyfin** | `anime.somethingsomething.fyi` | Streaming Media Server |
-| **9000** | **qBittorrent** | `torrents.somethingsomething.fyi` | BitTorrent Client (ProtonVPN) |
+| **9000** | **qBittorrent** | `torrents.somethingsomething.fyi` | BitTorrent Client (Cloudflare WARP VPN) |
 | **9001** | **Sonarr** | `sonarr.somethingsomething.fyi` | TV & Anime Acquisition |
-| **9002** | **Prowlarr** | `prowlarr.somethingsomething.fyi` | Torrent Indexer Aggregator (ProtonVPN) |
-| **9105** | **slskd** | `soulseek.somethingsomething.fyi` | Soulseek P2P Audio Downloader (ProtonVPN) |
+| **9002** | **Prowlarr** | `prowlarr.somethingsomething.fyi` | Torrent Indexer Aggregator (Cloudflare WARP VPN) |
+| **9105** | **slskd** | `soulseek.somethingsomething.fyi` | Soulseek P2P Audio Downloader (Cloudflare WARP VPN) |
 | **9101** | **Lidarr** | `music.somethingsomething.fyi` | Music Automation |
 | **9103** | **Navidrome** | `player.somethingsomething.fyi` | Subsonic Music Streaming Server |
 | **9104** | **MeTube** | `music-dl.somethingsomething.fyi` | Web Video & Audio Downloader (yt-dlp) |
