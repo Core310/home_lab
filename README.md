@@ -17,7 +17,7 @@ The stack deploys the following isolated services:
 - **Lidarr**: The high-res audio (FLAC) equivalent to Sonarr. Automates finding and organizing music.
 - **Navidrome**: A self-hosted music streaming server with Subsonic API support. Connect mobile apps like Symfonium (Android) or play:Sub (iOS) for on-the-go listening.
 - **MeTube**: YouTube and Spotify audio ripper — paste a URL, get the audio file. Perfect for game OSTs, live recordings, and playlists.
-- **Filebrowser**: A lightweight, modern web-based file manager for visually clicking and dragging files around your server via a web browser.
+- **Filebrowser Quantum**: Modern, actively maintained web-based file manager (`gtsteffaniak/filebrowser`) with multi-source management, media previews, and SQLite backend.
 - **Dufs**: A blazing-fast Rust WebDAV server running silently so mobile apps (like Poweramp via a WebDAV client) can natively stream your server's audio library.
 
 ### Manga Stack (`manga_stack/`)
@@ -127,7 +127,7 @@ Deploy any stack simply by running its respective `run.sh` script:
 | **9101** | **Lidarr** | `music.somethingsomething.fyi` | Music Automation |
 | **9103** | **Navidrome** | `player.somethingsomething.fyi` | Subsonic Music Streaming Server |
 | **9104** | **MeTube** | `music-dl.somethingsomething.fyi` | Web Video & Audio Downloader (yt-dlp) |
-| **9100** | **Filebrowser** | `files.somethingsomething.fyi` | Browser-based File Explorer |
+| **9100** | **Filebrowser Quantum** | `files.somethingsomething.fyi` | Modern Multi-Source File Manager (`gtsteffaniak`) |
 | **9102** | **Dufs** | `webdav.somethingsomething.fyi` | Fast Rust WebDAV Server |
 | **9700** | **Kavita** | `manga.somethingsomething.fyi` | Manga & Comic Reader (OPDS) |
 | **9701** | **Suwayomi** | `suwayomi.somethingsomething.fyi` | Manga Scraper & Downloader |
