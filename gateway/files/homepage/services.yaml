@@ -31,6 +31,10 @@
         icon: gitea.png
         href: https://git.somethingsomething.fyi
         description: Self-hosted Git Service
+    - ApplyPilot:
+        icon: briefcase.png
+        href: https://applypilot.somethingsomething.fyi
+        description: Autonomous Job Applier & HITL Queue
 
 - Lifestyle & Home:
     - Mealie:
