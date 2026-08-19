@@ -1,0 +1,3 @@
+[submodule "job_applier"]
+	path = job_applier
+	url = git@github.com:Core310/arika-autoapplier.git
