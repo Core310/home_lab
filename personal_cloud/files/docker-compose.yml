@@ -4,6 +4,7 @@ services:
     container_name: vaultwarden
     restart: unless-stopped
     environment:
+      - DOMAIN=https://vault.somethingsomething.fyi
       - WEBSOCKET_ENABLED=true
       - SIGNUPS_ALLOWED=true
     volumes:
