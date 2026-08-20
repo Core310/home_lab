@@ -113,6 +113,7 @@ services:
     volumes:
       - ./config/jellyfin:/config
       - ${MEDIA_DIR:-/opt/media}/jellyfin:/data
+      - ${MEDIA_DIR:-/opt/media}/movies:/data-movies
     ports:
       - 9003:8096
     restart: unless-stopped

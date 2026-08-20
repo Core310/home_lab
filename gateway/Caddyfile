@@ -152,3 +152,10 @@ pihole.{$DOMAIN:somethingsomething.fyi} {
     redir / /admin/ 308
     reverse_proxy host.docker.internal:9600
 }
+
+# ApplyPilot Dashboard
+applypilot.{$DOMAIN:somethingsomething.fyi}, apply.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
+    reverse_proxy host.docker.internal:9800
+}
+
