@@ -4,3 +4,6 @@
 [submodule "school"]
 	path = school
 	url = git@github.com:Core310/auto-canvas.git
+[submodule "auto_lc"]
+	path = auto_lc
+	url = git@github.com:Core310/auto-lc.git

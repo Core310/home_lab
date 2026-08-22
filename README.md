@@ -33,6 +33,22 @@ The stack deploys the following isolated services:
 - **Automated Container Updates**: Watchtower auto-updates running Docker containers every Sunday at 02:00 AM.
 - **Weekly Auto-Reboot**: Graceful system restart every Sunday at 05:00 AM to apply kernel/OS updates and clean runtime state, automatically bringing all `unless-stopped` containers back online.
 
+### Hardware HID & Assessment Automation (`auto_lc/`)
+- **Auto-LC Hardware Keystroke Pipeline**: Hardware-isolated assessment automation bridging an undetectable V4L2 virtual camera, Gemini 3.7 Flash multimodal reasoning, and an external Raspberry Pi Pico (RP2040) USB HID keyboard proxy.
+- **V4L2 Stealth Loopback Configuration**:
+  ```bash
+  sudo modprobe v4l2loopback devices=1 video_nr=2 card_label="Integrated Webcam" exclusive_caps=1 max_buffers=2
+  ```
+- **Serial Interface & Stop-and-Wait ACK Protocol**:
+  - Serial Port: `/dev/ttyACM0` @ `115200` baud (8N1).
+  - Protocol Packet: `P:<dwell_ms>:<hex_ascii_code>\n` with strict microcontroller `ACK\n` verification.
+- **Biometric Typing Shaper Constants**:
+  - Dwell Duration: `35ms` - `90ms` (log-normal distribution).
+  - Flight Transit: `25ms` - `110ms` (scaled to `65` WPM).
+  - Typo Error Rate: `2.5%` QWERTY adjacent slip with reflex latency backspacing (`\b`).
+  - Cognitive Pauses: `1.2s` - `3.5s` after loops (`for`, `while`), branching (`if`), and function headers.
+- **Submodule Repository**: `git@github.com:Core310/auto-lc.git`
+
 ## How It Works: Ansible + Docker
 
 **You only need to run the Ansible playbook.**
