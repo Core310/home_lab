@@ -159,3 +159,10 @@ applypilot.{$DOMAIN:somethingsomething.fyi}, apply.{$DOMAIN:somethingsomething.f
     reverse_proxy host.docker.internal:9800
 }
 
+# AutoCanvas Dashboard
+autocanvas.{$DOMAIN:somethingsomething.fyi}, canvas.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
+    reverse_proxy host.docker.internal:9801
+}
+
+
