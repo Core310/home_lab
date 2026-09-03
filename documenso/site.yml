@@ -1,0 +1,62 @@
+---
+- name: GSD Documenso Deployment (Digital Document Signing)
+  hosts: all
+  become: yes
+  vars:
+    target_user: "{{ lookup('env', 'SUDO_USER') if (lookup('env', 'SUDO_USER') != '' and lookup('env', 'SUDO_USER') != 'root') else lookup('env', 'USER') }}"
+    target_puid: "{{ puid | default('1000') }}"
+    target_pgid: "{{ pgid | default('1000') }}"
+
+  tasks:
+    - name: Ensure Docker, Docker Compose plugin, and OpenSSL are installed
+      apt:
+        name:
+          - docker-ce
+          - docker-compose-plugin
+          - openssl
+        state: present
+
+    - name: Create Documenso data directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0775'
+        owner: "{{ target_puid }}"
+        group: "{{ target_pgid }}"
+      loop:
+        - "{{ playbook_dir }}/data/db"
+        - "{{ playbook_dir }}/data/uploads"
+
+    - name: Check if signing certificate exists
+      stat:
+        path: "{{ playbook_dir }}/cert.p12"
+      register: cert_stat
+
+    - name: Generate signing certificate if missing
+      shell: >
+        openssl req -x509 -newkey rsa:4096 -keyout /tmp/documenso_key.pem -out /tmp/documenso_cert.pem -days 3650 -nodes -subj "/CN=Documenso" &&
+        openssl pkcs12 -export -out "{{ playbook_dir }}/cert.p12" -inkey /tmp/documenso_key.pem -in /tmp/documenso_cert.pem -passout pass:2300c9a24380da5ab798eac66a122715 &&
+        chmod 0644 "{{ playbook_dir }}/cert.p12" &&
+        chown {{ target_puid }}:{{ target_pgid }} "{{ playbook_dir }}/cert.p12" &&
+        rm -f /tmp/documenso_key.pem /tmp/documenso_cert.pem
+      when: not cert_stat.stat.exists
+
+    - name: Ensure .env exists from template
+      copy:
+        src: files/env.template
+        dest: "{{ playbook_dir }}/.env"
+        mode: '0600'
+        owner: "{{ target_puid }}"
+        group: "{{ target_pgid }}"
+        force: no
+
+    - name: Copy docker-compose.yml into stack directory
+      copy:
+        src: files/docker-compose.yml
+        dest: "{{ playbook_dir }}/docker-compose.yml"
+        mode: '0644'
+
+    - name: Spin up the Documenso stack
+      command: docker compose up -d
+      args:
+        chdir: "{{ playbook_dir }}"

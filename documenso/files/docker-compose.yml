@@ -1,0 +1,48 @@
+services:
+  documenso-postgres:
+    image: postgres:15-alpine
+    container_name: documenso-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=documenso
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=documenso
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U documenso -d documenso"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+
+  documenso:
+    image: documenso/documenso:latest
+    container_name: documenso
+    restart: unless-stopped
+    depends_on:
+      documenso-postgres:
+        condition: service_healthy
+    ports:
+      - "9205:3000"
+    volumes:
+      - ./cert.p12:/opt/documenso/cert.p12:ro
+    environment:
+      - PORT=3000
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXT_PRIVATE_ENCRYPTION_KEY=${NEXT_PRIVATE_ENCRYPTION_KEY}
+      - NEXT_PRIVATE_ENCRYPTION_SECONDARY_KEY=${NEXT_PRIVATE_ENCRYPTION_SECONDARY_KEY}
+      - NEXT_PUBLIC_WEBAPP_URL=https://sign.somethingsomething.fyi
+      - NEXT_PRIVATE_INTERNAL_WEBAPP_URL=http://localhost:3000
+      - NEXT_PRIVATE_DATABASE_URL=postgresql://documenso:${POSTGRES_PASSWORD}@documenso-postgres:5432/documenso
+      - NEXT_PRIVATE_DIRECT_DATABASE_URL=postgresql://documenso:${POSTGRES_PASSWORD}@documenso-postgres:5432/documenso
+      - NEXT_PUBLIC_UPLOAD_TRANSPORT=database
+      - NEXT_PRIVATE_SIGNING_LOCAL_FILE_PATH=/opt/documenso/cert.p12
+      - NEXT_PRIVATE_SIGNING_PASSPHRASE=${NEXT_PRIVATE_SIGNING_PASSPHRASE}
+      - NEXT_PRIVATE_SMTP_TRANSPORT=${NEXT_PRIVATE_SMTP_TRANSPORT:-smtp-auth}
+      - NEXT_PRIVATE_SMTP_HOST=${NEXT_PRIVATE_SMTP_HOST:-smtp.gmail.com}
+      - NEXT_PRIVATE_SMTP_PORT=${NEXT_PRIVATE_SMTP_PORT:-587}
+      - NEXT_PRIVATE_SMTP_USERNAME=${GMAIL_USER:-admin@somethingsomething.fyi}
+      - NEXT_PRIVATE_SMTP_PASSWORD=${GMAIL_APP_PASS:-change_me}
+      - NEXT_PRIVATE_SMTP_FROM_NAME=${SMTP_FROM_NAME:-Documenso}
+      - NEXT_PRIVATE_SMTP_FROM_ADDRESS=${GMAIL_USER:-admin@somethingsomething.fyi}
+      - NEXT_PRIVATE_SMTP_SECURE=false

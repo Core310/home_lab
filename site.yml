@@ -15,6 +15,9 @@
 - name: Deploy Utility Stack (Portainer, Beszel Hub/Agent, BentoPDF, VERT)
   import_playbook: utility_stack/site.yml
 
+- name: Deploy Documenso Stack (Document Signing & Templates)
+  import_playbook: documenso/site.yml
+
 - name: Deploy Anime & Acquisition Stack (qBittorrent, Sonarr, Prowlarr, Jellyfin)
   import_playbook: anime_torrent_streamer/site.yml
 

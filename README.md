@@ -24,6 +24,9 @@ The stack deploys the following isolated services:
 - **Kavita**: A self-hosted manga, comic, and book reader with OPDS support. Connect mobile apps like Mihon (Android) or Paperback (iOS) for reading on the go.
 - **Suwayomi**: A manga scraper and downloader server (Tachiyomi backend). Browse 1,300+ manga sources and automatically download chapters to your library.
 
+### Document Signing Stack (`documenso/`)
+- **Documenso**: The open-source DocuSign alternative for creating signing templates, sending documents, and executing digital signatures.
+
 ### Anime & Torrent Stack Extras
 - **slskd (Soulseek)**: P2P music discovery for lossless audio, game OSTs, and VGM. Routed through Cloudflare WARP VPN for privacy.
 
@@ -86,6 +89,9 @@ Deploy any stack simply by running its respective `run.sh` script:
 
 # 4. Utility Stack (Portainer, Beszel, BentoPDF, VERT)
 ./utility_stack/run.sh
+
+# 5. Document Signing Stack (Documenso)
+./documenso/run.sh
 
 # 5. Anime & Torrent Stack (qBittorrent, Sonarr, Prowlarr, Jellyfin)
 ./anime_torrent_streamer/run.sh
@@ -151,6 +157,7 @@ Deploy any stack simply by running its respective `run.sh` script:
 | **9202** | **Beszel Hub** | `status.somethingsomething.fyi` | Server Metrics & Hardware Monitor |
 | **9203** | **BentoPDF** | `pdf.somethingsomething.fyi` | Privacy-focused PDF Tools |
 | **9204** | **VERT** | `convert.somethingsomething.fyi` | Offline Universal File Converter |
+| **9205** | **Documenso** | `sign.somethingsomething.fyi` | Digital Document Signing & Templates |
 | **Internal** | **Watchtower** | `N/A` | Automated Container Updater (Sun 02:00) |
 | **53 / 80** | **Pi-hole** | `pihole.somethingsomething.fyi` | DNS Sinkhole & Adblocker (Tailscale All-Origins) |
 

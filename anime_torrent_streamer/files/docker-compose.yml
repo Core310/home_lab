@@ -27,6 +27,8 @@ services:
       - WIREGUARD_PRIVATE_KEY=oG+m/V4uuDSXg6Vp6zNzEcp4L1Mk4tZpAAndGjd1Un8=
       - WIREGUARD_ADDRESSES=172.16.0.2/32
       - FIREWALL_OUTBOUND_SUBNETS=100.64.0.0/10,fd7a:115c:a1e0::/48,192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,127.0.0.1/32
+      - FIREWALL_INPUT_PORTS=53
+      - DNS_REBINDING_PROTECTION_EXEMPT_HOSTNAMES=somethingsomething.fyi
     restart: unless-stopped
 
   qbittorrent:

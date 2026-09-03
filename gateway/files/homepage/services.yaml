@@ -106,6 +106,10 @@
         icon: pdf.png
         href: https://pdf.somethingsomething.fyi
         description: Offline PDF Toolkit
+    - Documenso:
+        icon: documenso.png
+        href: https://sign.somethingsomething.fyi
+        description: Digital Document Signing & Templates
     - VERT:
         icon: swap.png
         href: https://convert.somethingsomething.fyi

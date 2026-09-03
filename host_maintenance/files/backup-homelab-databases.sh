@@ -58,6 +58,12 @@ backup_file "/home/arika/D/docs/home_lab/music_stack/config/filebrowser/filebrow
 backup_file "/home/arika/D/docs/home_lab/pihole/etc-pihole/pihole-FTL.db" "pihole/pihole-FTL.db"
 backup_file "/home/arika/D/docs/home_lab/pihole/etc-pihole/gravity.db" "pihole/gravity.db"
 
+# 5. Documents & Signatures (Documenso PostgreSQL)
+if docker ps --format '{{.Names}}' | grep -q "^documenso-postgres$"; then
+    mkdir -p "$TEMP_DIR/documenso"
+    docker exec documenso-postgres pg_dump -U documenso documenso > "$TEMP_DIR/documenso/documenso.sql" 2>/dev/null || true
+fi
+
 # Sync latest staging to mirror latest
 rsync -a --delete "$TEMP_DIR/" "$MIRROR_LATEST/"
 

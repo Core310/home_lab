@@ -2,11 +2,27 @@
     email {$ACME_EMAIL:admin@somethingsomething.fyi}
 }
 
+(security_headers) {
+    header {
+        # Prevent MIME type sniffing
+        X-Content-Type-Options "nosniff"
+        # Clickjacking protection
+        X-Frame-Options "SAMEORIGIN"
+        # Referrer privacy
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # Enforce HTTPS (HSTS)
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        # Remove server disclosure header
+        -Server
+    }
+}
+
 (cf_tls) {
     tls {
         dns cloudflare {$CLOUDFLARE_API_TOKEN}
         resolvers 1.1.1.1 8.8.8.8
     }
+    import security_headers
 }
 
 (tailnet_trusted) {
@@ -145,6 +161,11 @@ convert.{$DOMAIN:somethingsomething.fyi} {
 status.{$DOMAIN:somethingsomething.fyi} {
     import cf_tls
     reverse_proxy host.docker.internal:9202
+}
+
+sign.{$DOMAIN:somethingsomething.fyi} {
+    import cf_tls
+    reverse_proxy host.docker.internal:9205
 }
 
 pihole.{$DOMAIN:somethingsomething.fyi} {
